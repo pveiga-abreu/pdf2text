@@ -30,11 +30,29 @@ And others...
 
 &nbsp;
 
-## Usage Example:
+## Usage Examples:
 
 ```python
 pdf = PDF2Text('/path/to/pdf/file.pdf')
-text = pdf.extract_text(lang='eng')
+
+"""
+Select an area using coordinates -> (X, Y, W, H)
+X, Y = Top Left Corner
+W = Width
+H = Height
+"""
+text = pdf.extract_text_from_location((260,2411,1099,79), lang='por')
+
+print(text)
+```
+
+```python
+pdf = PDF2Text('/path/to/pdf/file.pdf')
+
+"""
+Extract the text from the entire document
+"""
+text = pdf.extract_all_text()
 
 print(text)
 ```

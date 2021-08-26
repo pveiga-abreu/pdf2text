@@ -40,9 +40,10 @@ class PDF2Text:
             dpi=350,
             single_file=True
         )[0]
+        self.dimensions = image.size
         image.save(self._img_path, 'JPEG')
 
-    def draw_lines(self, *args, thickness=5, color=(0,0,255)) -> None:
+    def draw_lines(self, *args, thickness: int = 5, color: tuple = (0,0,255)) -> None:
         """
         args -> initial coordinate and final coordinate formatted like this ((X_tl, Y_tl), (X_br, Y_br)), 
                 you should pass all pair of coordinates you want to draw
@@ -58,7 +59,7 @@ class PDF2Text:
 
         cv2.imwrite(self._img_path, image)
 
-    def draw_rectangles(self, *args, thickness=5, color=(0,0,255)) -> None:
+    def draw_rectangles(self, *args, thickness: int = 5, color: tuple = (0,0,255)) -> None:
         """
         args -> top-left corner and bottom-right corner of rectangle formatted like this ((X_tl, Y_tl), (X_br, Y_br)), 
                 you should pass all pair of coordinates you want to draw
@@ -74,11 +75,27 @@ class PDF2Text:
 
         cv2.imwrite(self._img_path, image)
 
-    def extract_text(self, lang: str='eng') -> str:
+    def extract_text_from_location(self, coordinates: tuple, lang: str = 'eng') -> str:
         """
-        Returns text from the pdf
+        coordinates : tuple -> top-left corner (X,Y), width and height formatted like this (X, Y, Width, Height) 
 
         lang: str -> default 'eng'
+
+        Returns text from the specified location
+        """
+        image = cv2.imread(self._img_path)
+
+        x,y,w,h = coordinates
+        chunk = image[y:y+h, x:x+w]
+        text = pytesseract.image_to_string(chunk, lang=lang)
+
+        return text.strip()
+
+    def extract_all_text(self, lang: str = 'eng') -> str:
+        """
+        lang: str -> default 'eng'
+
+        Returns text from the pdf
         """
         return pytesseract.image_to_string(
                 Image.open(self._img_path),
